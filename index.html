@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>RANDomly Complex: AI-Enabled Policy Decision Support (Prototype)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{--bg:#f5f6f8;--sf:#fff;--tx:#0f1b2d;--mu:#5a6577;--bd:#d9dde4;--ac:#0b5fa5;--wa:#b45309;--ok:#15803d;--c1:#0b5fa5;--c2:#b45309;--c3:#15803d}
+@media (prefers-color-scheme:dark){:root{--bg:#0d1520;--sf:#16212f;--tx:#eef2f7;--mu:#9aa6b8;--bd:#2b3a4e;--ac:#5aa9f0;--wa:#f2a53b;--ok:#4ade80;--c1:#5aa9f0;--c2:#f2a53b;--c3:#4ade80}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:20px 20px 0;max-width:980px;margin:0 auto}h1{font-size:24px;margin:0}h2{font-size:20px;margin:0 0 8px}h3{font-size:15px;margin:0 0 4px}
+.sub{color:var(--mu);margin:2px 0 14px;font-size:14px}
+nav{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--bd);max-width:980px;margin:0 auto;padding:0 20px}
+nav button{all:unset;cursor:pointer;padding:10px 12px;font-size:14px;white-space:nowrap;border-bottom:3px solid transparent;color:var(--mu)}
+nav button.on{color:var(--tx);border-color:var(--ac);font-weight:600}
+main{max-width:980px;margin:0 auto;padding:20px 20px 60px}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:16px;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.mu{color:var(--mu);font-size:14px}.tag{display:inline-block;font-size:12px;border:1px solid var(--bd);border-radius:99px;padding:1px 9px;margin:0 4px 4px 0;color:var(--mu)}
+.warn{border-left:4px solid var(--wa)}.btn{background:var(--ac);color:#fff;border:0;border-radius:7px;padding:8px 14px;font:600 14px inherit;cursor:pointer;margin:4px 6px 0 0}
+.btn.alt{background:transparent;color:var(--ac);border:1px solid var(--ac)}
+label{display:block;font-size:14px;margin:10px 0 2px}input[type=range]{width:100%}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:8px;border-bottom:1px solid var(--bd);vertical-align:top}
+select{font:inherit;padding:3px;background:var(--sf);color:var(--tx);border:1px solid var(--bd);border-radius:5px}
+.bar{height:10px;background:var(--bd);border-radius:5px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac)}
+.row{display:grid;grid-template-columns:minmax(120px,190px) 1fr 70px;gap:10px;align-items:center;font-size:14px;margin:7px 0}
+svg{width:100%;height:auto}.scroll{overflow-x:auto}pre{white-space:pre-wrap;font:13px/1.5 ui-monospace,Consolas,monospace;margin:0}
+.log{font:12px ui-monospace,Consolas,monospace;color:var(--mu);max-height:180px;overflow:auto}
+</style></head><body>
+<header><h1>RANDomly Complex</h1>
+<p class="sub">Prototype: AI-enabled policy decision support and governance platform · illustrative data, not for operational use</p></header>
+<nav id="nav"></nav><main id="v"></main>
+<script>
+const TABS=["1 Brief","2 Evidence","3 Analysis","4 Governance","5 Decision memo","6 Architecture"];
+const OPT=[["Cyber-led response","Utility, EPA and CISA lead; DoD kept informed"],["National-security-led response","DoD and intelligence community lead; civilian agencies support"],["Joint fused response","Shared command, shared data, one decision authority"]];
+const CR=["Public health protection","Attribution and threat insight","Response speed","Cost and disruption"];
+const M={ben:[[9,4,8,8],[5,6,4,3],[8,7,6,5]],mal:[[6,3,6,7],[7,9,6,4],[8,8,6,5]]};
+const SRC=[["EPA drinking water compliance data (SDWIS / ECHO)","Baseline water-system performance and violations"],["CISA industrial control system advisories","Known vulnerabilities in treatment and SCADA equipment"],["NIST National Vulnerability Database","Vulnerability records for vendor components"],["Treasury CFIUS annual reports to Congress","Foreign-investment review patterns"],["NIST AI Risk Management Framework","Governance controls for the AI components"]];
+const GOV=[["Human decision-maker reviews and owns the recommendation",1],["Every data source has recorded provenance and verification status",1],["AI-assisted outputs are labeled and logged",1],["Assumptions have been challenged (red-team pass)",1],["Data sensitivity screen: only public, unclassified data used",0],["Analysis is reproducible (fixed seed, versioned inputs)",0]];
+const S={tab:0,w:[3,3,3,3],p:30,sp:15,seed:42,src:SRC.map(()=>"Candidate"),gov:GOV.map(()=>false),log:[]};
+const $=s=>document.querySelector(s);
+function log(m){S.log.unshift(new Date().toLocaleTimeString()+"  "+m);if(S.log.length>40)S.log.pop()}
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const W=()=>S.w.reduce((a,b)=>a+b,0)||1;
+const U=(h,o)=>M[h][o].reduce((s,x,i)=>s+x*S.w[i],0)/W();
+function sim(){const r=rng(S.seed),N=2000,u=[[],[],[]],win=[0,0,0];
+ for(let n=0;n<N;n++){const p=Math.min(1,Math.max(0,S.p/100+(r()+r()-1)*S.sp/100)),h=r()<p?"mal":"ben";
+  const v=[0,1,2].map(o=>M[h][o].reduce((s,x,i)=>s+(x+(r()+r()+r()-1.5)*2.4)*S.w[i],0)/W());
+  v.forEach((x,o)=>u[o].push(x));win[v.indexOf(Math.max(...v))]++}
+ return u.map((a,o)=>{a.sort((x,y)=>x-y);return{m:a.reduce((s,x)=>s+x,0)/N,lo:a[Math.floor(N*.05)],hi:a[Math.floor(N*.95)],win:win[o]/N}})}
+function curve(R){const Wd=640,H=230,x=p=>44+p*(Wd-64)/100,y=v=>H-26-v*(H-46)/10,cs=["var(--c1)","var(--c2)","var(--c3)"];
+ let g="";[0,5,10].forEach(v=>g+=`<line x1="44" x2="${Wd-20}" y1="${y(v)}" y2="${y(v)}" stroke="var(--bd)"/><text x="36" y="${y(v)+4}" font-size="11" text-anchor="end" fill="var(--mu)">${v}</text>`);
+ [0,25,50,75,100].forEach(p=>g+=`<text x="${x(p)}" y="${H-8}" font-size="11" text-anchor="middle" fill="var(--mu)">${p}%</text>`);
+ const L=o=>`<polyline fill="none" stroke="${cs[o]}" stroke-width="2.5" points="${[0,10,20,30,40,50,60,70,80,90,100].map(p=>x(p)+","+y((1-p/100)*U("ben",o)+p/100*U("mal",o))).join(" ")}"/>`;
+ return `<div class="scroll"><svg viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Expected utility of each option versus probability the incident is malicious">${g}${[0,1,2].map(L).join("")}<line x1="${x(S.p)}" x2="${x(S.p)}" y1="20" y2="${H-26}" stroke="var(--tx)" stroke-dasharray="4 3"/><text x="${x(S.p)+4}" y="30" font-size="11" fill="var(--tx)">your estimate</text></svg></div>
+ <p class="mu"><span style="color:var(--c1)">● Cyber-led</span> &nbsp; <span style="color:var(--c2)">● National-security-led</span> &nbsp; <span style="color:var(--c3)">● Joint fused</span> &nbsp; (x axis: probability the incident is deliberate and foreign-directed)</p>`}
+const bar=(l,v,t)=>`<div class="row"><span>${l}</span><div class="bar"><i style="width:${Math.max(0,Math.min(100,v))}%"></i></div><b>${t}</b></div>`;
+function status(){const ver=S.src.filter(x=>x=="Verified").length,req=GOV.every((g,i)=>!g[1]||S.gov[i]);return{ver,req,ok:req&&ver>=3}}
+function memo(){const R=sim(),b=R.map(r=>r.m).indexOf(Math.max(...R.map(r=>r.m))),st=status();
+ return `DRAFT DECISION MEMO (prototype, illustrative inputs)
+Status: ${st.ok?"Ready for human review":"NOT RELEASABLE: required governance controls or verified sources incomplete"}
+
+Question: Should AI-enabled critical infrastructure risks be treated primarily as cybersecurity threats, national security concerns, or both?
+Scenario: AI-managed water treatment system serving a community and a nearby military installation shows unexplained chlorine variations.
+
+Recommendation: ${OPT[b][0]} (${OPT[b][1]}).
+Mean weighted utility ${R[b].m.toFixed(2)}/10 (90% interval ${R[b].lo.toFixed(1)}-${R[b].hi.toFixed(1)}); best option in ${(R[b].win*100).toFixed(0)}% of ${2000} simulated draws.
+
+Assumptions: P(deliberate foreign-directed) ${S.p}% ± ${S.sp} pts; criteria weights ${CR.map((c,i)=>c+" "+S.w[i]).join(", ")}; seed ${S.seed}.
+Evidence: ${st.ver} of ${SRC.length} sources marked verified.
+Governance: ${S.gov.filter(Boolean).length} of ${GOV.length} controls attested.
+Caveats: option scores are illustrative placeholders pending sourced evidence; the model does not predict outcomes.
+
+Audit trail (latest first):
+${S.log.slice(0,8).join("\n")}`}
+function render(){
+ $("#nav").innerHTML=TABS.map((t,i)=>`<button class="${i==S.tab?"on":""}" onclick="S.tab=${i};render()">${t}</button>`).join("");
+ const v=$("#v");let h="";
+ if(S.tab==0)h=`<h2>AI-enabled policy decision support under uncertainty</h2><p class="mu">Should AI-enabled critical infrastructure risks be treated primarily as cybersecurity threats, national security concerns, or both?</p>
+ <div class="card"><h3>Demonstration scenario</h3><p>An AI-managed water treatment system serving a civilian community and a nearby military installation begins showing unexplained variations in chlorine levels. Ownership, vendor and international investment relationships are complex. Is it a malfunction, a cyber intrusion, or a deliberate act by a foreign adversary? The answer determines who leads, what data is collected and what actions are authorized.</p></div>
+ <div class="grid"><div class="card"><h3>What you do here</h3><p class="mu">Review evidence, model the decision under uncertainty, run governance checks, then generate a decision memo a human leader can accept or reject.</p></div>
+ <div class="card warn"><h3>Prototype status</h3><p class="mu">Scenario details and option scores are placeholders. Replace them with sourced public data and log each AI-assisted claim and its verification.</p></div></div>
+ <button class="btn" onclick="S.tab=1;render()">Start with the evidence</button>`;
+ if(S.tab==1)h=`<h2>Evidence data room</h2><p class="mu">Candidate public sources. Nothing is ingested yet. Mark a source Verified only after you check it against the original.</p>
+ <div class="card scroll"><table><tr><th>Source</th><th>Use</th><th>Status</th></tr>${SRC.map((s,i)=>`<tr><td>${s[0]}</td><td class="mu">${s[1]}</td><td><select onchange="S.src[${i}]=this.value;log('Source '+${i+1}+' marked '+this.value);render()">${["Candidate","Ingested","Verified"].map(o=>`<option ${S.src[i]==o?"selected":""}>${o}</option>`).join("")}</select></td></tr>`).join("")}</table></div>
+ <p class="mu">Verified: ${status().ver} of ${SRC.length}. The memo needs at least 3.</p>`;
+ if(S.tab==2){const R=sim(),b=R.map(r=>r.m).indexOf(Math.max(...R.map(r=>r.m)));
+ h=`<h2>Decision analysis</h2><p class="mu">Monte Carlo comparison of three command models under uncertainty about whether the incident is deliberate. Scores are illustrative.</p>
+ <div class="grid"><div class="card"><h3>Your assumptions</h3>
+ <label>Probability incident is deliberate and foreign-directed: <b>${S.p}%</b></label><input type="range" min="0" max="100" value="${S.p}" oninput="this.previousElementSibling.lastChild.textContent=this.value+'%'" onchange="S.p=+this.value;log('P(malicious) set to '+S.p);render()">
+ <label>Uncertainty in that estimate: <b>± ${S.sp} pts</b></label><input type="range" min="0" max="40" value="${S.sp}" oninput="this.previousElementSibling.lastChild.textContent='± '+this.value+' pts'" onchange="S.sp=+this.value;log('Uncertainty set to '+S.sp);render()">
+ ${CR.map((c,i)=>`<label>Weight: ${c} (${S.w[i]})</label><input type="range" min="0" max="5" value="${S.w[i]}" oninput="this.previousElementSibling.textContent='Weight: ${c} ('+this.value+')'" onchange="S.w[${i}]=+this.value;log('Weight ${c} = '+this.value);render()">`).join("")}
+ <p class="mu">Random seed ${S.seed} (fixed, so results reproduce)</p></div>
+ <div class="card"><h3>Results (2,000 draws)</h3>${R.map((r,o)=>bar(OPT[o][0]+(o==b?" ★":""),r.m*10,r.m.toFixed(1)+"/10")).join("")}
+ <p class="mu">Chance each option is best: ${R.map((r,o)=>OPT[o][0].split(" ")[0]+" "+(r.win*100).toFixed(0)+"%").join(" · ")}</p>
+ <p class="mu">90% intervals: ${R.map((r,o)=>r.lo.toFixed(1)+"–"+r.hi.toFixed(1)).join(" · ")}</p></div></div>
+ <div class="card"><h3>Sensitivity: where does the best option flip?</h3>${curve(R)}</div>`}
+ if(S.tab==3){const st=status();h=`<h2>AI governance controls</h2><p class="mu">Attest each control before a memo can be released for human review. Required controls are marked.</p>
+ <div class="card">${GOV.map((g,i)=>`<label style="display:flex;gap:8px;margin:8px 0"><input type="checkbox" ${S.gov[i]?"checked":""} onchange="S.gov[${i}]=this.checked;log('Control ${i+1} '+(this.checked?'attested':'cleared'));render()"><span>${g[0]} ${g[1]?'<span class="tag">required</span>':""}</span></label>`).join("")}</div>
+ <div class="card ${st.ok?"":"warn"}"><h3>Release status</h3><p>${st.ok?"Ready for human review.":"Not releasable: complete all required controls and verify at least 3 sources."}</p></div>
+ <div class="card"><h3>Audit log</h3><div class="log">${S.log.length?S.log.join("<br>"):"No actions recorded yet."}</div></div>`}
+ if(S.tab==4){const t=memo();h=`<h2>Decision memo</h2><p class="mu">Generated from your current evidence, assumptions and controls. A human decides.</p><div class="card"><pre id="memo">${t.replace(/</g,"&lt;")}</pre></div>
+ <button class="btn" onclick="navigator.clipboard.writeText($('#memo').textContent);log('Memo copied')">Copy memo</button>
+ <button class="btn alt" onclick="dl()">Download .md</button>`}
+ if(S.tab==5){const bx=["Public data","Provenance and validation","Analysis engine","AI assist (labeled)","Decision memo"];
+ h=`<h2>Platform architecture</h2><p class="mu">This prototype is static and client-side, so it hosts free. The same layers scale to an enterprise build.</p>
+ <div class="card scroll"><svg viewBox="0 0 900 210" role="img" aria-label="Pipeline from public data to decision memo under a governance layer">
+ ${bx.map((t,i)=>`<rect x="${10+i*178}" y="20" width="150" height="70" rx="8" fill="var(--sf)" stroke="var(--ac)" stroke-width="1.5"/><text x="${85+i*178}" y="60" font-size="13" text-anchor="middle" fill="var(--tx)">${t}</text>${i<4?`<text x="${165+i*178}" y="60" font-size="20" fill="var(--mu)">→</text>`:""}`).join("")}
+ <rect x="10" y="120" width="880" height="60" rx="8" fill="none" stroke="var(--wa)" stroke-width="1.5" stroke-dasharray="5 4"/><text x="450" y="155" font-size="13" text-anchor="middle" fill="var(--tx)">Governance layer: human review, audit log, release gates, reproducibility</text></svg></div>
+ <div class="grid"><div class="card"><h3>Technical architecture</h3><p class="mu">Modular layers, static front end, swap-in APIs later.</p></div><div class="card"><h3>Data science</h3><p class="mu">Seeded Monte Carlo, sensitivity analysis, uncertainty reporting.</p></div><div class="card"><h3>AI governance</h3><p class="mu">Required controls, labeled AI outputs, release gating, audit trail.</p></div><div class="card"><h3>Executive decision-making</h3><p class="mu">Options, trade-offs and a memo with explicit caveats.</p></div></div>`}
+ v.innerHTML=h}
+function dl(){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([memo()],{type:"text/markdown"}));a.download="decision-memo.md";a.click();log("Memo downloaded")}
+log("Session started");render();
+</script></body></html>
